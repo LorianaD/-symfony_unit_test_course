@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos produits{% endblock %}
+
+{% block body %}
+    <main>
+        <h2>Nos produits</h2>
+        {% if products %}
+            {% for product in products %}
+                <div>
+                    <h3>{{ product.name }}</h3>
+                    <div>
+                        <div>
+                            <p>Stock</p>  
+                            <p>{{ product.stock }}</p>
+                        </div>
+
+                        <div>
+                            <p>Prix</p>  
+                            <p>{{ product.price }}</p>
+                        </div>         
+                    </div>
+                </div>       
+            {% endfor %}        
+        {% else %}
+            <div>
+                <p>Aucun produits trouvés</p>
+            </div>
+        {% endif %}    
+    </main>
+{% endblock %}

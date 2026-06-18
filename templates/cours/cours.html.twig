@@ -1,0 +1,16 @@
+{# pour faire des commentaire #}
+
+{# pour faire une variable #}
+{{ name }}
+
+{# pour faire des conditions #}
+{% if product.stock < 1 %}
+    stock null
+{% else %}
+    {{ product.stock }}
+{% endif %}
+
+{# pour faire une boucle #}
+{% for product in products %}
+    {{ product.name }}
+{% endfor %}

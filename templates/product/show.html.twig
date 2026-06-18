@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits selecionné{% endblock %}
+
+{% block body %}
+    <main>
+        {% if product %}
+        <h2>{{ product.name }}</h2>
+            <div>
+                <p>Stock</p>
+                <p>{{ product.stock }}</p>              
+            </div>
+            <div>
+                <p>Prix</p>
+                <p>{{ product.price }}</p>
+            </div>
+        {% else %}
+            <div>
+                <p>Aucun informations trouvés</p>
+            </div>
+        {% endif %}
+    </main>
+{% endblock %}

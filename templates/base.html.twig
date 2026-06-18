@@ -19,6 +19,9 @@
         {% endif %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {# {% include "__header" %} #}
+            {% block body %}{% endblock %}
+        {# {% include "__footer" %} #}
+        {# bonne pratique les fichier (composants) les nommée avec double __ #}
     </body>
 </html>
