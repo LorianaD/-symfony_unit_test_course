@@ -5,23 +5,31 @@
 {% block body %}
     <main>
         <h2>Nos produits</h2>
+        <a href="{{ path('app_product_new') }}">Ajouter un produit</a>
         {% if products %}
-            {% for product in products %}
-                <div>
-                    <h3>{{ product.name }}</h3>
-                    <div>
-                        <div>
-                            <p>Stock</p>  
-                            <p>{{ product.stock }}</p>
-                        </div>
+            <table>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>
+                                <h3>{{ product.name }}</h3>
+                            </td>
+                            <td>
+                                <p>Stock</p>  
+                                <p>{{ product.stock }}</p>
+                            </td>
 
-                        <div>
-                            <p>Prix</p>  
-                            <p>{{ product.price }}</p>
-                        </div>         
-                    </div>
-                </div>       
-            {% endfor %}        
+                            <td>
+                                <p>Prix</p>  
+                                <p>{{ product.price }}</p>
+                            </td>
+                            <td>
+                                <a href="{{path('app_product', { id : product.id })}}">Voir le produit</a>
+                            </td>
+                        </tr>       
+                    {% endfor %}               
+                </tbody>
+            </table>  
         {% else %}
             <div>
                 <p>Aucun produits trouvés</p>

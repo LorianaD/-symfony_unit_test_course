@@ -1,0 +1,6 @@
+<form action="{{ pathAction }}" method="post">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ id) }}">
+    <button type="submit">
+        Supprimer
+    </button>
+</form>

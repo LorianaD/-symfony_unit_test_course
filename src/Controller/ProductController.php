@@ -2,33 +2,109 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
+use App\Form\ProductType;
 use App\Service\ProductService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/product')]
 final class ProductController extends AbstractController
 {
+
+    private ProductService $ps;
+
     #[Route('/', name: 'app_products')]
-    public function index(ProductService $productService): Response
+    public function index(): Response
     {
         // autowiring
-        $products = $productService->getAllProducts();
+        $products = $this->ps->getAllProducts();
         
         return $this->render('product/index.html.twig', [
             'products' => $products,
         ]);
     }
 
+    #[Route('/new', name: 'app_product_new', methods: ['POST' , 'GET'])]
+    public function new(Request $request): Response
+    {
+        $newProduct = new Product();
+        $FormNewProduct = $this->createForm(ProductType::class, $newProduct);
+        $FormNewProduct->handleRequest($request);
+
+        if ($FormNewProduct->isSubmitted() && $FormNewProduct->isValid()) {
+            $this->ps->addProduct($newProduct);
+
+            return $this->redirectToRoute('app_products');
+        }
+
+        return $this->render('product/new.html.twig', [
+            'FormNewProduct' => $FormNewProduct,
+        ]);
+    }
+
     #[Route('/{id}', name: 'app_product', methods: ['GET'])]
-    public function show(int $id, ProductService $productService): Response
+    public function show(int $id): Response
     {
 
-        $product = $productService->getOneProduct($id);
+        $product = $this->ps->getOneProduct($id);
+        $isAvailable = $this->ps->isAvailable($product);
+
+        if (!$product) {
+            throw $this->createNotFoundException('produit introuvable');
+        }
 
         return $this->render('product/show.html.twig',[
             'product' => $product,
+            'isAvailable' => $isAvailable,
         ]);
     }
+
+    #[Route('/{id}/edit', name: 'app_product_edit', methods: ['POST', 'GET'])]
+    public function edit(int $id, Request $request): Response
+    {
+        $product = $this->ps->getOneProduct($id);
+
+        if (!$product) {
+            throw $this->createNotFoundException('produit introuvable');
+        }
+
+        $FormEditProduct = $this->createForm(ProductType::class, $product);
+        $FormEditProduct->handleRequest($request);
+
+        if ($FormEditProduct->isSubmitted() && $FormEditProduct->isValid()) {
+            $this->ps->updateProduct($product);
+
+            return $this->redirectToRoute('app_product', array(
+                'id' => $product->getId(),
+            ));
+        }
+
+        return $this->render('product/edit.html.twig', [
+            'FormEditProduct' => $FormEditProduct,
+            'product' => $product,
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'app_product_delete', methods: ['POST'])]
+    public function delete( int $id ): Response
+    {
+        $product = $this->ps->getOneProduct($id);
+
+        if (!$product) {
+            throw $this->createNotFoundException('produit introuvable');
+        }
+
+        $this->ps->deleteProduct($product);
+
+        return $this->redirectToRoute('app_products');
+    }
 }
+
+// faire une factorisation est pratique pour :
+// 1 test -> isolé et tester une fois
+// 2 lecture -> plus facile à lire les de, plus clair
+// 3 reutilisation -> faire le code une fois et le rappeler partout
+// 4 MAINTENABILITE

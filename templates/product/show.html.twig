@@ -1,19 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Produits selecionné{% endblock %}
+{% block title %}{{ product.name }}{% endblock %}
 
 {% block body %}
     <main>
-        {% if product %}
+        <a href="{{path('app_products')}}">Retour à l'accueil</a>    
         <h2>{{ product.name }}</h2>
+        {% if product %}
+            {% if isAvailable %}
+                <div>
+                    <h3>Stock</h3>
+                    <p>{{ product.stock }}</p>              
+                </div>                
+            {% else %}
+                <p>Produit indisponible</p>
+            {% endif %}
             <div>
-                <p>Stock</p>
-                <p>{{ product.stock }}</p>              
-            </div>
-            <div>
-                <p>Prix</p>
+                <h3>Prix</h3>
                 <p>{{ product.price }}</p>
             </div>
+            <a href="{{ path('app_product_edit', { 'id' : product.id }) }}">Modifier</a>
+            {% include "partials/form/_delete.html.twig" with {
+                pathAction: path("app_product_delete", { id: product.id }),
+                id : product.id,
+            } %}
         {% else %}
             <div>
                 <p>Aucun informations trouvés</p>

@@ -1,0 +1,10 @@
+{% extends "base.html.twig" %}
+
+{% block title %}New{% endblock %}
+
+{% block body %}
+    <main>
+        {{ form(FormEditProduct) }}
+        <a href="{{path('app_product', { id : product.id })}}">Annuler</a>
+    </main>
+{% endblock %}
