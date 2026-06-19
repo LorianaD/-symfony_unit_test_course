@@ -14,13 +14,13 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ProductController extends AbstractController
 {
 
-    private ProductService $ps;
+    // private ProductService $ps;
 
     #[Route('/', name: 'app_products')]
-    public function index(): Response
+    public function index(ProductService $ps): Response
     {
         // autowiring
-        $products = $this->ps->getAllProducts();
+        $products = $ps->getAllProducts();
         
         return $this->render('product/index.html.twig', [
             'products' => $products,
@@ -28,14 +28,14 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/new', name: 'app_product_new', methods: ['POST' , 'GET'])]
-    public function new(Request $request): Response
+    public function new(Request $request, ProductService $ps): Response
     {
         $newProduct = new Product();
         $FormNewProduct = $this->createForm(ProductType::class, $newProduct);
         $FormNewProduct->handleRequest($request);
 
         if ($FormNewProduct->isSubmitted() && $FormNewProduct->isValid()) {
-            $this->ps->addProduct($newProduct);
+            $ps->addProduct($newProduct);
 
             return $this->redirectToRoute('app_products');
         }
@@ -46,11 +46,11 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_product', methods: ['GET'])]
-    public function show(int $id): Response
+    public function show(int $id, ProductService $ps): Response
     {
 
-        $product = $this->ps->getOneProduct($id);
-        $isAvailable = $this->ps->isAvailable($product);
+        $product = $ps->getOneProduct($id);
+        $isAvailable = $ps->isAvailable($product);
 
         if (!$product) {
             throw $this->createNotFoundException('produit introuvable');
@@ -63,9 +63,9 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['POST', 'GET'])]
-    public function edit(int $id, Request $request): Response
+    public function edit(int $id, Request $request, ProductService $ps): Response
     {
-        $product = $this->ps->getOneProduct($id);
+        $product = $ps->getOneProduct($id);
 
         if (!$product) {
             throw $this->createNotFoundException('produit introuvable');
@@ -75,7 +75,7 @@ final class ProductController extends AbstractController
         $FormEditProduct->handleRequest($request);
 
         if ($FormEditProduct->isSubmitted() && $FormEditProduct->isValid()) {
-            $this->ps->updateProduct($product);
+            $ps->updateProduct($product);
 
             return $this->redirectToRoute('app_product', array(
                 'id' => $product->getId(),
@@ -89,15 +89,15 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_product_delete', methods: ['POST'])]
-    public function delete( int $id ): Response
+    public function delete( int $id, ProductService $ps ): Response
     {
-        $product = $this->ps->getOneProduct($id);
+        $product = $ps->getOneProduct($id);
 
         if (!$product) {
             throw $this->createNotFoundException('produit introuvable');
         }
 
-        $this->ps->deleteProduct($product);
+        $ps->deleteProduct($product);
 
         return $this->redirectToRoute('app_products');
     }
